@@ -1,4 +1,4 @@
-const express = require("express");
+import express, { Request, Response } from "express";
 const cors = require("cors");
 import "dotenv/config";
 import mongoose from "mongoose";
@@ -13,6 +13,10 @@ const app = express();
 app.use(express.json());
 // Enable CORS for all requests
 app.use(cors());
+
+app.get("/health", (req: Request, res: Response) => {
+  res.send({ message: "Server is healthy" });
+});
 
 app.use("/api/my/user", myUserRoute);
 
