@@ -1,6 +1,22 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 
+const getCurrentUser = async (req: Request, res: Response) => {
+  try {
+    // 1. Check if the user exists
+    const user = await User.findById(req.userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    // 2. Return the user
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ message: "Something went wrong!" });
+  }
+};
+
 const createCurrentUser = async (req: Request, res: Response) => {
   try {
     // 1. Check if the user exists
@@ -49,4 +65,4 @@ const updateCurrentUser = async (req: Request, res: Response) => {
   }
 };
 
-export default { createCurrentUser, updateCurrentUser };
+export default { createCurrentUser, updateCurrentUser, getCurrentUser };
