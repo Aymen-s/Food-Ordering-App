@@ -66,7 +66,8 @@ const updateMyRestaurant = async (req: Request, res: Response) => {
       restaurant.imageUrl = imageUrl;
     }
 
-    await restaurant.save;
+    await restaurant.save();
+
     res.status(200).send(restaurant);
   } catch (error) {
     console.error("Error updating restaurant:", error);

@@ -12,59 +12,67 @@ import { Button } from "@/components/ui/button";
 import { Restaurant } from "@/types";
 import { useEffect } from "react";
 
-const formSchema = z.object({
-  restaurantName: z
-    .string({
-      required_error: "Restaurant name is required",
-    })
-    .min(1, "Restaurant name is required"),
-  city: z
-    .string({
-      required_error: "City is required",
-    })
-    .min(1, "City is required"),
-  country: z
-    .string({
-      required_error: "Country is required",
-    })
-    .min(1, "Country is required"),
-  deliveryPrice: z.coerce
-    .number({
-      required_error: "Delivery price is required",
-      invalid_type_error: "Delivery price must be a number",
-    })
-    .min(0, "Delivery price must be a positive number"),
-  estimatedDeliveryTime: z.coerce
-    .number({
-      required_error: "Estimated delivery time is required",
-      invalid_type_error: "Estimated delivery time must be a number",
-    })
-    .min(1, "Estimated delivery time must be at least 1 minute"),
-  cuisines: z
-    .array(
-      z.string().nonempty({
-        message: "Cuisine cannot be empty",
+const formSchema = z
+  .object({
+    restaurantName: z
+      .string({
+        required_error: "Restaurant name is required",
       })
-    )
-    .min(1, {
-      message: "Please select at least one cuisine",
-    }), // Ensure at least one cuisine
-  menuItems: z
-    .array(
-      z.object({
-        name: z.string().min(1, {
-          message: "Menu item name is required",
-        }), // Ensure non-empty name
-        price: z.coerce.number().min(1, {
-          message: "Price must be at least 1",
-        }),
+      .min(1, "Restaurant name is required"),
+    city: z
+      .string({
+        required_error: "City is required",
       })
-    )
-    .min(1, {
-      message: "Please add at least one menu item",
-    }), // Ensure at least one menu item
-  imageFile: z.instanceof(File, { message: "Image file is required" }),
-});
+      .min(1, "City is required"),
+    country: z
+      .string({
+        required_error: "Country is required",
+      })
+      .min(1, "Country is required"),
+    deliveryPrice: z.coerce
+      .number({
+        required_error: "Delivery price is required",
+        invalid_type_error: "Delivery price must be a number",
+      })
+      .min(0, "Delivery price must be a positive number"),
+    estimatedDeliveryTime: z.coerce
+      .number({
+        required_error: "Estimated delivery time is required",
+        invalid_type_error: "Estimated delivery time must be a number",
+      })
+      .min(1, "Estimated delivery time must be at least 1 minute"),
+    cuisines: z
+      .array(
+        z.string().nonempty({
+          message: "Cuisine cannot be empty",
+        })
+      )
+      .min(1, {
+        message: "Please select at least one cuisine",
+      }), // Ensure at least one cuisine
+    menuItems: z
+      .array(
+        z.object({
+          name: z.string().min(1, {
+            message: "Menu item name is required",
+          }), // Ensure non-empty name
+          price: z.coerce.number().min(1, {
+            message: "Price must be at least 1",
+          }),
+        })
+      )
+      .min(1, {
+        message: "Please add at least one menu item",
+      }), // Ensure at least one menu item
+    imageUrl: z.string().optional(),
+    imageFile: z
+      .instanceof(File, { message: "Image file is required" })
+      .optional(),
+  })
+  .refine((data) => data.imageUrl || data.imageFile, {
+    message: "Either image URL or image File must be provided",
+    path: ["imageFile"],
+  });
 
 type RestaurantFormData = z.infer<typeof formSchema>;
 
@@ -127,7 +135,9 @@ const ManageRestaurantForm = ({ onSave, isLoading, restaurant }: Props) => {
         (menuItem.price * 100).toString()
       );
     });
-    formData.append("imageFile", formDataJson.imageFile);
+    if (formDataJson.imageFile) {
+      formData.append("imageFile", formDataJson.imageFile);
+    }
     formData.forEach((value, key) => {
       console.log(key, value);
     });
