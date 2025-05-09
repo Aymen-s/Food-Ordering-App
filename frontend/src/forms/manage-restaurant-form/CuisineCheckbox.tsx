@@ -8,21 +8,25 @@ type Props = {
 };
 
 const CuisineCheckbox = ({ cuisine, field }: Props) => {
+  const isChecked = Array.isArray(field.value) && field.value.includes(cuisine);
+
+  const handleCheckedChange = (checked: boolean) => {
+    if (!Array.isArray(field.value)) return;
+
+    const updatedValue = checked
+      ? [...field.value, cuisine]
+      : field.value.filter((item) => item !== cuisine);
+
+    field.onChange(updatedValue);
+  };
+
   return (
     <FormItem className="flex flex-row items-center space-x-1 space-y-0 mt-2">
       <FormControl>
         <Checkbox
           className="bg-white"
-          checked={field.value.includes(cuisine)}
-          onCheckedChange={(checked) => {
-            if (checked) {
-              field.onChange([...field.value, cuisine]);
-            } else {
-              field.onChange(
-                field.value.filter((value: string) => value !== cuisine)
-              );
-            }
-          }}
+          checked={isChecked}
+          onCheckedChange={handleCheckedChange}
         />
       </FormControl>
       <FormLabel className="text-sm font-normal">{cuisine}</FormLabel>
