@@ -9,45 +9,47 @@ import SearchPage from "./pages/SearchPage";
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Layout showHero>
-            <HomePage />
-          </Layout>
-        }
-      />
-      <Route path="/auth-callback" element={<AuthCallbackPage />} />
-      <Route
-        path="/search/:city"
-        element={
-          <Layout showHero={false}>
-            <SearchPage />
-          </Layout>
-        }
-      />
-      <Route element={<ProtectedRoute />}>
+    <div className="p-3">
+      <Routes>
         <Route
-          path="/user-profile"
+          path="/"
           element={
-            <Layout>
-              <UserProfilePage />
+            <Layout showHero>
+              <HomePage />
             </Layout>
           }
         />
+        <Route path="/auth-callback" element={<AuthCallbackPage />} />
         <Route
-          path="/manage-restaurant"
+          path="/search/:city"
           element={
-            <Layout>
-              <ManageRestaurantPage />
+            <Layout showHero={false}>
+              <SearchPage />
             </Layout>
           }
         />
-      </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/user-profile"
+            element={
+              <Layout>
+                <UserProfilePage />
+              </Layout>
+            }
+          />
+          <Route
+            path="/manage-restaurant"
+            element={
+              <Layout>
+                <ManageRestaurantPage />
+              </Layout>
+            }
+          />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </div>
   );
 };
 
