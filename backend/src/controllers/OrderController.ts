@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import Restaurant, { MenuItemType } from "../models/Restaurant";
+import Order from "../models/Order";
 
 const STRIPE = new Stripe(process.env.STRIPE_API_KEY as string);
 const FRONTEND_URL = process.env.FRONTEND_URL as string;
@@ -28,6 +29,15 @@ const createCheckoutSession = async (req: any, res: any) => {
     if (!restaurant) {
       throw new Error("Restaurant not found");
     }
+
+    const newOrder = new Order({
+      restaurant: restaurant,
+      user: req.userId,
+      status: "placed",
+      deliveryDetails: checkoutSessionRequest.deliveryDetails,
+      cartItems: checkoutSessionRequest.cartItems,
+      createdAt: new Date(),
+    });
     const lineItems = createLineItems(
       checkoutSessionRequest,
       restaurant.menuItems
@@ -35,7 +45,7 @@ const createCheckoutSession = async (req: any, res: any) => {
 
     const session = await createSession(
       lineItems,
-      "TEST_ORDER_ID",
+      newOrder._id.toString(),
       restaurant.deliveryPrice,
       restaurant._id.toString()
     );
@@ -44,6 +54,7 @@ const createCheckoutSession = async (req: any, res: any) => {
         message: "Failed to create checkout session",
       });
     }
+    await newOrder.save();
     res.status(200).json({
       url: session.url,
     });
