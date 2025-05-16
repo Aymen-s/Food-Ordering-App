@@ -24,12 +24,18 @@ export const useGetMyOrders = () => {
     return response.json();
   };
 
-  const { data: orders, isPending: isLoading } = useQuery({
+  const {
+    data: orders,
+    isPending: isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["fetchMyOrders"],
     queryFn: getMyOrdersRequest,
+    refetchInterval: 5000,
   });
 
-  return { orders, isLoading };
+  return { orders, isLoading, isError, error };
 };
 
 type CheckoutSessionRequest = {
