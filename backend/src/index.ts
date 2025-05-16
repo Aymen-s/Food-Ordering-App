@@ -19,10 +19,14 @@ cloudinary.config({
 });
 
 const app = express();
-// Parse JSON bodies (as sent by API clients)
-app.use(express.json());
+
 // Enable CORS for all requests
 app.use(cors());
+
+app.use("/api/order/checkout/webhook", express.raw({ type: "*/*" }));
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
 
 app.get("/health", (req: Request, res: Response) => {
   res.send({ message: "Server is healthy" });
